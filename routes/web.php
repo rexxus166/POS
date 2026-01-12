@@ -48,6 +48,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/transaction/store', [TransactionController::class, 'store'])->name('transaction.store');
     });
 
+    // Route untuk melihat Struk Belanja
+    Route::get('/receipt/{invoice_code}', [TransactionController::class, 'show'])->name('transaction.receipt');
+
 
     // --- D. SETTINGS ---
     // Route GET (Menampilkan Halaman)

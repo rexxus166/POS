@@ -31,10 +31,16 @@ class PosController extends Controller
             ->where('tenant_id', $user->tenant_id)
             ->get();
 
+        // Map object tenant ke nama 'store' biar sesuai frontend baru
+        // Kita clone atau inject property 'name' supaya sama dengan ekspektasi frontend (store.name)
+        if ($tenant) {
+            $tenant->name = $tenant->business_name;
+        }
+
         return Inertia::render('POS/Index', [
             'products' => $products,
-            'tenant' => $tenant,
-            'cashierName' => $user->name
+            'store' => $tenant, // Frontend minta props 'store'
+            'auth' => ['user' => $user] // Frontend minta props 'auth'
         ]);
     }
 }
