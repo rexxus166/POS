@@ -1,11 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/react';
+import Swal from 'sweetalert2';
 
 export default function AuthenticatedLayout({ user, header, children }) {
     const [showingSidebar, setShowingSidebar] = useState(false);
 
     // Ambil URL saat ini untuk penanda menu "Active"
-    const { url } = usePage();
+    // Ambil props global (subscription_alert) dari HandleInertiaRequests
+    const { url, props } = usePage();
+    const { subscription_alert } = props;
+
+    // --- EFFECT: CEK SUBSCRIPTION ALERT ---
+    // --- EFFECT: CEK SUBSCRIPTION ALERT ---
+    useEffect(() => {
+        // Cek apakah ada alert data
+        if (subscription_alert) {
+            Swal.fire({
+                title: 'Masa Aktif Segera Habis!',
+                text: `${subscription_alert.message || `Paket Anda akan berakhir dalam ${subscription_alert.days_left} hari lagi (${subscription_alert.date}).`}`,
+                icon: 'warning',
+                confirmButtonText: 'Perpanjang Sekarang',
+                showCancelButton: true,
+                cancelButtonText: 'Nanti Saja',
+                buttonsStyling: true,
+                customClass: {
+                    confirmButton: 'bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-indigo-700 mr-2',
+                    cancelButton: 'bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-bold hover:bg-gray-300'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Arahkan ke WA Admin atau Halaman Billing
+                    window.location.href = "https://wa.me/6283186523420?text=Halo%20Admin,%20saya%20mau%20perpanjang%20langganan";
+                }
+            });
+        }
+    }, [subscription_alert]);
 
     // --- DAFTAR MENU ---
     const menus = [

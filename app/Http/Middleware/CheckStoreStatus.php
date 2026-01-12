@@ -21,7 +21,7 @@ class CheckStoreStatus
 
         // 2. Cek apakah user punya toko
         if ($user->tenant) {
-            
+
             // 3. Cek Status: SUSPENDED
             if ($user->tenant->status === 'suspended') {
                 // Jangan pakai Inertia::render langsung di sini karena bisa loop
@@ -29,10 +29,10 @@ class CheckStoreStatus
                 return redirect()->route('store.suspended');
             }
 
-            // 4. (Opsional) Cek Status: TRIAL EXPIRED
-            // if ($user->tenant->status === 'trial' && $user->tenant->created_at->addDays(14)->isPast()) {
-            //     return redirect()->route('store.expired');
-            // }
+            // 4. Cek Status: EXPIRED (Trial / Active tapi masa aktif habis)
+            if ($user->tenant->subscription_ends_at && now()->greaterThan($user->tenant->subscription_ends_at)) {
+                return redirect()->route('store.expired');
+            }
         }
 
         return $next($request);

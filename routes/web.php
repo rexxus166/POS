@@ -39,6 +39,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Errors/Suspended');
     })->name('store.suspended');
 
+    // [BARU] RUTE HALAMAN ERROR EXPIRED
+    Route::get('/akun/expired', function () {
+        return Inertia::render('Errors/Expired');
+    })->name('store.expired');
+
 
     // --- A. DASHBOARD SUPER ADMIN (OWNER APLIKASI) ---
     // Super Admin bebas akses, tidak perlu cek status toko

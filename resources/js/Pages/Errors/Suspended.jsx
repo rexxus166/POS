@@ -27,7 +27,7 @@ export default function Suspended() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                    <a href="https://wa.me/6283195937644" className="w-full bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700 transition">
+                    <a href="https://wa.me/6283186523420" className="w-full bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700 transition">
                         Hubungi WhatsApp Admin
                     </a>
 
@@ -37,7 +37,7 @@ export default function Suspended() {
                 </div>
             </div>
 
-            <p className="mt-8 text-gray-400 text-sm">Powered by TemanNiaga &copy; {new Date().getFullYear()}</p>
+            <p className="mt-8 text-gray-400 text-sm">Powered by SahabatNiaga &copy; {new Date().getFullYear()}</p>
         </div>
     );
 }

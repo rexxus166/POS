@@ -51,6 +51,7 @@ class RegisteredUserController extends Controller
                 'business_name' => $request->business_name,
                 'slug' => \Illuminate\Support\Str::slug($request->business_name) . '-' . \Illuminate\Support\Str::random(4), // Add slug generation
                 'status' => 'trial', // Default status Trial
+                'subscription_ends_at' => now()->addDays(14), // [BARU] Trial 14 Hari
                 'address' => '-', // Default kosong dulu
             ]);
 

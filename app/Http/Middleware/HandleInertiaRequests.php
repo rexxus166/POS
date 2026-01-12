@@ -29,11 +29,33 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+        $subscriptionAlert = null;
+
+        if ($user && $user->tenant) {
+            $endsAt = $user->tenant->subscription_ends_at;
+
+            if ($endsAt) {
+                // Hitung selisih hari dari SEKARANG
+                // false = absolute value off (bisa negatif)
+                $daysLeft = now()->diffInDays($endsAt, false);
+
+                // Jika tinggal 5 hari atau kurang (tapi masih aktif / >= 0)
+                if ($daysLeft <= 5 && $daysLeft >= 0) {
+                    $subscriptionAlert = [
+                        'days_left' => (int) $daysLeft,
+                        'date' => $endsAt->format('d M Y')
+                    ];
+                }
+            }
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
             ],
+            'subscription_alert' => $subscriptionAlert,
         ];
     }
 }

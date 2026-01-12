@@ -16,6 +16,13 @@ class EmployeeController extends Controller
     {
         $user = Auth::user();
 
+        // [BARU] CEK STATUS BERLANGGANAN (FITUR PRO)
+        if ($user->tenant->status !== 'active') {
+            // Jika status masih trial, tidak boleh akses
+            return redirect()->back()->with('error', 'Fitur Manajemen Karyawan hanya untuk paket PRO.');
+            // Atau bisa return Inertia Page khusus "Upgrade Pro"
+        }
+
         // Ambil user lain yang satu toko, TAPI kecualikan diri sendiri
         $employees = User::where('tenant_id', $user->tenant_id)
             ->where('id', '!=', $user->id) // Jangan tampilkan akun sendiri

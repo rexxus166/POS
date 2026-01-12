@@ -22,7 +22,12 @@ class Store extends Model
         'description',
         'qris_static_image',
         'status',
+        'subscription_ends_at',
         // Tambahkan kolom lain yang ada di tabel tenants kamu (misal: domain, logo, dll)
+    ];
+
+    protected $casts = [
+        'subscription_ends_at' => 'date',
     ];
 
     // 3. JEMBATAN (ACCESSOR) PENTING!
