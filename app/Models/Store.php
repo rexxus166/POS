@@ -16,6 +16,7 @@ class Store extends Model
     protected $fillable = [
         'user_id',
         'business_name', // Ganti 'name' jadi 'business_name'
+        'slug', // [PENTING] Tambahkan slug agar bisa diisi saat register
         'address',
         'phone',
         'description',

@@ -33,6 +33,18 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = Auth::user();
+
+        // Redirect based on Role
+        if ($user->role === 'owner') {
+            return redirect()->intended(route('super.dashboard', absolute: false));
+        }
+
+        if ($user->role === 'cashier') {
+            return redirect()->intended(route('pos.index', absolute: false));
+        }
+
+        // Default for Admin (Tenant Owner)
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
