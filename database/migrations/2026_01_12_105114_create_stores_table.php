@@ -21,6 +21,8 @@ return new class extends Migration
             // Ini kolom penting yang tadi bikin error di Frontend
             $table->string('qris_static_image')->nullable();
 
+            $table->boolean('is_active')->default(true);
+
             $table->timestamps();
         });
     }

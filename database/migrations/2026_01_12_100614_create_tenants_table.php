@@ -29,7 +29,7 @@ return new class extends Migration
 
             // --- SUBSCRIPTION ---
             $table->date('subscription_ends_at')->nullable(); // Tanggal habis masa aktif
-            $table->enum('status', ['active', 'inactive', 'trial'])->default('trial');
+            $table->enum('status', ['active', 'inactive', 'trial', 'suspended'])->default('trial');
 
             $table->timestamps();
         });
