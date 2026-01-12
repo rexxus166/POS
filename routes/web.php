@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransactionController;
@@ -36,6 +37,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('SuperAdmin/Dashboard');
     })->middleware('role:owner')->name('super.dashboard');
 
+    // [BARU] Route Manajemen Karyawan (Hanya Owner/Admin Toko)
+    Route::resource('employees', EmployeeController::class)
+        ->only(['index', 'store', 'destroy'])
+        ->middleware('role:admin'); // Middleware admin = owner toko
+
 
     // --- B. DASHBOARD TENANT (GANTI BAGIAN INI) ---
     Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -55,6 +61,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Route untuk melihat Struk Belanja
     Route::get('/receipt/{invoice_code}', [TransactionController::class, 'show'])->name('transaction.receipt');
+
+    // [BARU] Route Riwayat Transaksi
+    Route::get('/transactions/history', [TransactionController::class, 'history'])
+        ->name('transaction.history');
 
 
     // --- D. SETTINGS ---

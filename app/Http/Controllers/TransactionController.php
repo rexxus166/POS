@@ -105,7 +105,7 @@ class TransactionController extends Controller
         }
     }
 
-    // TAMBAHAN BARU: Method untuk menampilkan Struk
+    // Method untuk menampilkan Struk
     public function show($invoiceCode)
     {
         $user = Auth::user();
@@ -118,6 +118,38 @@ class TransactionController extends Controller
 
         return Inertia::render('Transaction/Receipt', [
             'transaction' => $transaction
+        ]);
+    }
+
+    // [BARU] Method untuk Halaman Riwayat Transaksi
+    public function history(Request $request)
+    {
+        $user = Auth::user();
+
+        // Ambil parameter tanggal dari request (kalau ada)
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        // Query Dasar: Ambil transaksi milik tenant ini
+        $query = Transaction::with(['cashier']) // Eager load data kasir
+            ->where('tenant_id', $user->tenant_id)
+            ->latest(); // Urutkan dari yang terbaru
+
+        // Filter Berdasarkan Tanggal (Jika user memilih tanggal)
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [
+                $startDate . ' 00:00:00',
+                $endDate . ' 23:59:59'
+            ]);
+        }
+
+        // Ambil data dengan Pagination (10 per halaman)
+        // append(request()->query()) berguna agar saat ganti halaman, filter tanggal tidak hilang
+        $transactions = $query->paginate(10)->withQueryString();
+
+        return Inertia::render('Transaction/History', [
+            'transactions' => $transactions,
+            'filters' => $request->only(['start_date', 'end_date'])
         ]);
     }
 }
