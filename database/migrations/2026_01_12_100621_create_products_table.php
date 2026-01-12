@@ -24,7 +24,8 @@ return new class extends Migration
 
             // Stok management
             $table->integer('stock')->default(0);
-            $table->boolean('is_stock_managed')->default(true); // False = Jasa/Unlimited
+            $table->boolean('is_stock_managed')->default(true);
+            $table->string('category')->default('General');
 
             // --- FITUR CUSTOMISASI PRODUK (JSON) ---
             // Isinya: {"size": ["M", "L"], "color": ["Red"], "topping": [...]}

@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransactionController;
 use App\Models\Store;
 use Inertia\Inertia;
@@ -35,10 +37,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->middleware('role:owner')->name('super.dashboard');
 
 
-    // --- B. DASHBOARD TENANT (PEMILIK TOKO) ---
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->middleware('role:admin')->name('dashboard');
+    // --- B. DASHBOARD TENANT (GANTI BAGIAN INI) ---
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->middleware('role:admin')
+        ->name('dashboard');
+
+    // ROUTE MANAJEMEN PRODUK (Resource otomatis buat index, store, update, destroy)
+    Route::resource('products', ProductController::class)->middleware('role:admin');
 
 
     // --- C. POS SYSTEM & TRANSAKSI ---
