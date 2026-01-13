@@ -158,7 +158,7 @@ export default function Welcome({ auth }) {
                     </motion.div>
 
                     <div className="grid md:grid-cols-3 gap-8">
-                        {/* Feature 1 */}
+                        {/* Feature 1 - Updated */}
                         <motion.div
                             initial="hidden"
                             whileInView="visible"
@@ -176,7 +176,7 @@ export default function Welcome({ auth }) {
                             </p>
                         </motion.div>
 
-                        {/* Feature 2 */}
+                        {/* Feature 2 - Updated with Charts */}
                         <motion.div
                             initial="hidden"
                             whileInView="visible"
@@ -189,13 +189,13 @@ export default function Welcome({ auth }) {
                             <div className="w-14 h-14 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 group-hover:text-white transition-colors duration-300">
                                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                             </div>
-                            <h3 className="text-xl font-bold mb-3 text-gray-900">Analisa Data Real-time</h3>
+                            <h3 className="text-xl font-bold mb-3 text-gray-900">Laporan Laba Rugi Lengkap</h3>
                             <p className="text-gray-500 leading-relaxed">
-                                Ambil keputusan bisnis berdasarkan data. Pantau omzet harian, produk terlaris, dan jam sibuk langsung dari HP Owner.
+                                Analisa profit real-time dengan grafik interaktif. Pantau HPP, margin, top produk, dan trend penjualan. Export ke Excel/PDF!
                             </p>
                         </motion.div>
 
-                        {/* Feature 3 */}
+                        {/* Feature 3 - Updated with Activity Log */}
                         <motion.div
                             initial="hidden"
                             whileInView="visible"
@@ -208,9 +208,66 @@ export default function Welcome({ auth }) {
                             <div className="w-14 h-14 bg-pink-100 text-pink-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-pink-600 group-hover:text-white transition-colors duration-300">
                                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                             </div>
-                            <h3 className="text-xl font-bold mb-3 text-gray-900">Manajemen Karyawan</h3>
+                            <h3 className="text-xl font-bold mb-3 text-gray-900">Log Aktivitas Karyawan</h3>
                             <p className="text-gray-500 leading-relaxed">
-                                Atur hak akses kasir dan manager. Cegah kecurangan dengan log aktivitas yang lengkap dan transparan.
+                                Tracking lengkap setiap aktivitas kasir. Cegah kecurangan dengan log login, transaksi, dan perubahan data yang transparan.
+                            </p>
+                        </motion.div>
+
+                        {/* NEW Feature 4 - Export & Charts */}
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            variants={fadeInUp}
+                            transition={{ delay: 0.6 }}
+                            whileHover={{ y: -10 }}
+                            className="bg-gray-50 p-8 rounded-3xl transition-all duration-300 hover:shadow-xl hover:bg-white border border-gray-100 group"
+                        >
+                            <div className="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300">
+                                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <h3 className="text-xl font-bold mb-3 text-gray-900">Export PDF & Excel</h3>
+                            <p className="text-gray-500 leading-relaxed">
+                                Download laporan keuangan dalam format PDF atau Excel. Siap untuk presentasi, audit, atau arsip bisnis Anda.
+                            </p>
+                        </motion.div>
+
+                        {/* NEW Feature 5 - Visual Charts */}
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            variants={fadeInUp}
+                            transition={{ delay: 0.8 }}
+                            whileHover={{ y: -10 }}
+                            className="bg-gray-50 p-8 rounded-3xl transition-all duration-300 hover:shadow-xl hover:bg-white border border-gray-100 group"
+                        >
+                            <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                            </div>
+                            <h3 className="text-xl font-bold mb-3 text-gray-900">Grafik Visual Interaktif</h3>
+                            <p className="text-gray-500 leading-relaxed">
+                                Visualisasi data dengan Line Chart, Bar Chart, dan Pie Chart. Lihat trend penjualan dan performa bisnis dengan jelas!
+                            </p>
+                        </motion.div>
+
+                        {/* NEW Feature 6 - Email Notifications */}
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            variants={fadeInUp}
+                            transition={{ delay: 1.0 }}
+                            whileHover={{ y: -10 }}
+                            className="bg-gray-50 p-8 rounded-3xl transition-all duration-300 hover:shadow-xl hover:bg-white border border-gray-100 group"
+                        >
+                            <div className="w-14 h-14 bg-yellow-100 text-yellow-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-yellow-600 group-hover:text-white transition-colors duration-300">
+                                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <h3 className="text-xl font-bold mb-3 text-gray-900">Notifikasi Email Otomatis</h3>
+                            <p className="text-gray-500 leading-relaxed">
+                                Reminder otomatis sebelum subscription habis. Jangan sampai bisnis terganggu karena lupa perpanjang paket!
                             </p>
                         </motion.div>
                     </div>
@@ -271,9 +328,12 @@ export default function Welcome({ auth }) {
                             </div>
                             <ul className="text-left space-y-4 mb-10 text-gray-300">
                                 <li className="flex items-center"><svg className="w-5 h-5 text-indigo-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Semua Fitur Trial</li>
-                                <li className="flex items-center"><svg className="w-5 h-5 text-indigo-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Laporan Laba Rugi Lengkap</li>
-                                <li className="flex items-center"><svg className="w-5 h-5 text-indigo-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Manajemen Karyawan (Log)</li>
-                                <li className="flex items-center"><svg className="w-5 h-5 text-indigo-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Support Prioritas WA</li>
+                                <li className="flex items-center"><svg className="w-5 h-5 text-indigo-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Laporan Laba Rugi + HPP</li>
+                                <li className="flex items-center"><svg className="w-5 h-5 text-indigo-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Export PDF & Excel</li>
+                                <li className="flex items-center"><svg className="w-5 h-5 text-indigo-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Grafik Visual Interaktif</li>
+                                <li className="flex items-center"><svg className="w-5 h-5 text-indigo-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Log Aktivitas Karyawan</li>
+                                <li className="flex items-center"><svg className="w-5 h-5 text-indigo-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Email Reminder Otomatis</li>
+                                <li className="flex items-center"><svg className="w-5 h-5 text-indigo-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Support Prioritas WhatsApp</li>
                             </ul>
                             <Link href={route('register')} className="block w-full py-4 px-6 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/50 hover:shadow-indigo-500/70">
                                 Pilih Paket Pro

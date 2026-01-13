@@ -6,11 +6,49 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function AuthenticatedLayout({ user, header, children }) {
     const [showingSidebar, setShowingSidebar] = useState(false);
     const [showingUserMenu, setShowingUserMenu] = useState(false);
+    const [ping, setPing] = useState(null);
+    const [isPortrait, setIsPortrait] = useState(false);
 
     // Ambil URL saat ini untuk penanda menu "Active"
     // Ambil props global (subscription_alert) dari HandleInertiaRequests
     const { url, props } = usePage();
     const { subscription_alert } = props;
+
+    // --- EFFECT: DETECT PORTRAIT MODE ---
+    useEffect(() => {
+        const checkOrientation = () => {
+            const isMobile = window.innerWidth < 768;
+            const isPortraitMode = window.innerHeight > window.innerWidth;
+            setIsPortrait(isMobile && isPortraitMode);
+        };
+
+        checkOrientation();
+        window.addEventListener('resize', checkOrientation);
+        window.addEventListener('orientationchange', checkOrientation);
+
+        return () => {
+            window.removeEventListener('resize', checkOrientation);
+            window.removeEventListener('orientationchange', checkOrientation);
+        };
+    }, []);
+
+    // --- EFFECT: MEASURE NETWORK PING ---
+    useEffect(() => {
+        const measurePing = async () => {
+            const start = performance.now();
+            try {
+                await fetch('/api/ping', { method: 'HEAD' });
+                const end = performance.now();
+                setPing(Math.round(end - start));
+            } catch (error) {
+                setPing(null);
+            }
+        };
+
+        measurePing();
+        const interval = setInterval(measurePing, 10000); // Update every 10s
+        return () => clearInterval(interval);
+    }, []);
 
     // --- EFFECT: CEK SUBSCRIPTION ALERT ---
     useEffect(() => {
@@ -96,7 +134,8 @@ export default function AuthenticatedLayout({ user, header, children }) {
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
             ),
-            roles: ['admin'], // HANYA ADMIN TOKO
+            roles: ['admin'],
+            isPremium: true, // PRO BUSINESS ONLY
         },
         {
             label: '📊 Laporan Laba Rugi',
@@ -104,7 +143,8 @@ export default function AuthenticatedLayout({ user, header, children }) {
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
             ),
-            roles: ['admin'], // PRO BUSINESS ONLY
+            roles: ['admin'],
+            isPremium: true, // PRO BUSINESS ONLY
         },
         {
             label: '💰 Laporan Keuangan',
@@ -112,7 +152,8 @@ export default function AuthenticatedLayout({ user, header, children }) {
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
             ),
-            roles: ['admin'], // PRO BUSINESS ONLY
+            roles: ['admin'],
+            isPremium: true, // PRO BUSINESS ONLY
         },
         {
             label: '📋 Log Aktivitas',
@@ -120,7 +161,8 @@ export default function AuthenticatedLayout({ user, header, children }) {
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             ),
-            roles: ['admin'], // PRO BUSINESS ONLY
+            roles: ['admin'],
+            isPremium: true, // PRO BUSINESS ONLY
         },
         {
             label: 'Pengaturan Toko',
@@ -151,14 +193,36 @@ export default function AuthenticatedLayout({ user, header, children }) {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex">
+        <div className="h-screen bg-gray-100 flex overflow-hidden">
+            {/* === LANDSCAPE ORIENTATION REQUIRED OVERLAY === */}
+            {isPortrait && (
+                <div className="fixed inset-0 bg-gray-900 z-[9999] flex flex-col items-center justify-center p-8 text-center">
+                    <div className="bg-white rounded-2xl p-8 max-w-sm shadow-2xl">
+                        <div className="mb-6">
+                            <svg className="w-20 h-20 mx-auto text-indigo-600 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-4">Rotate Your Device</h2>
+                        <p className="text-gray-600 mb-6">
+                            Aplikasi POS ini memerlukan mode <strong>Landscape</strong> untuk pengalaman terbaik.
+                        </p>
+                        <div className="flex items-center justify-center gap-2 text-indigo-600 font-bold">
+                            <svg className="w-6 h-6 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Putar perangkat Anda
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* --- SIDEBAR --- */}
             <motion.aside
                 initial="hidden"
                 animate="visible"
                 variants={sidebarVariants}
-                className={`bg-white w-64 min-h-screen border-r border-gray-200 fixed md:relative z-30 transition-all duration-300 ${showingSidebar ? 'ml-0' : '-ml-64 md:ml-0'}`}
+                className={`bg-white w-64 h-full border-r border-gray-200 fixed md:relative z-30 transition-all duration-300 flex flex-col ${showingSidebar ? 'ml-0' : '-ml-64 md:ml-0'}`}
             >
                 {/* Logo Area */}
                 <div className="h-16 flex items-center justify-center border-b border-gray-200 px-4">
@@ -180,26 +244,39 @@ export default function AuthenticatedLayout({ user, header, children }) {
                 </div>
 
                 {/* Menu Links */}
-                <nav className="p-4 space-y-1 overflow-y-auto">
+                <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
                     {visibleMenus.map((menu, index) => {
                         const isActive = route().current(menu.route + '*');
+                        const isTrial = user.tenant?.status === 'trial';
+                        const isLocked = menu.isPremium && isTrial;
+
                         return (
                             <Link
                                 key={index}
                                 href={route(menu.route)}
+                                className={isLocked ? 'pointer-events-none' : ''}
                             >
                                 <motion.div
                                     variants={linkVariants}
-                                    whileHover={{ x: 5 }}
-                                    className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
-                                        ? 'bg-indigo-50 text-indigo-700'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                    whileHover={!isLocked ? { x: 5 } : {}}
+                                    className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isLocked
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                        : isActive
+                                            ? 'bg-indigo-50 text-indigo-700'
+                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                         }`}
                                 >
-                                    <span className={`${isActive ? 'text-indigo-600' : 'text-gray-400'} mr-3`}>
-                                        {menu.icon}
-                                    </span>
-                                    {menu.label}
+                                    <div className="flex items-center">
+                                        <span className={`${isActive ? 'text-indigo-600' : isLocked ? 'text-gray-300' : 'text-gray-400'} mr-3`}>
+                                            {menu.icon}
+                                        </span>
+                                        {menu.label}
+                                    </div>
+                                    {isLocked && (
+                                        <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"></path>
+                                        </svg>
+                                    )}
                                 </motion.div>
                             </Link>
                         )
@@ -225,7 +302,7 @@ export default function AuthenticatedLayout({ user, header, children }) {
             </motion.aside>
 
             {/* --- MAIN CONTENT WRAPPER --- */}
-            <div className="flex-1 flex flex-col min-h-screen transition-all duration-300">
+            <div className="flex-1 flex flex-col h-full transition-all duration-300">
 
                 {/* Topbar Mobile (Hanya muncul di HP untuk buka sidebar) */}
                 <header className="bg-white shadow-sm h-16 flex items-center justify-between px-4 md:hidden z-20 sticky top-0">
@@ -236,43 +313,65 @@ export default function AuthenticatedLayout({ user, header, children }) {
                         <span className="ml-4 font-bold text-gray-800">POS SaaS</span>
                     </div>
 
-                    {/* User Dropdown - Mobile */}
-                    <div className="relative">
-                        <button
-                            onClick={() => setShowingUserMenu(!showingUserMenu)}
-                            className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900"
-                        >
-                            <div className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">
-                                {user.name.charAt(0).toUpperCase()}
+                    {/* Status Indicators + User Dropdown */}
+                    <div className="flex items-center gap-3">
+                        {/* Subscription Badge */}
+                        {user.tenant && (
+                            <div className={`px-2 py-1 rounded-full text-xs font-bold ${user.tenant.status === 'trial'
+                                ? 'bg-yellow-100 text-yellow-700'
+                                : 'bg-green-100 text-green-700'
+                                }`}>
+                                {user.tenant.status === 'trial' ? 'TRIAL' : 'PRO'}
                             </div>
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-
-                        {showingUserMenu && (
-                            <>
-                                <div className="fixed inset-0 z-30" onClick={() => setShowingUserMenu(false)}></div>
-                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-40">
-                                    <div className="px-4 py-2 border-b">
-                                        <p className="text-sm font-bold text-gray-800">{user.name}</p>
-                                        <p className="text-xs text-gray-500 capitalize">{user.role}</p>
-                                    </div>
-                                    <Link
-                                        href={route('profile.edit')}
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    >
-                                        👤 Profil
-                                    </Link>
-                                    <Link
-                                        href={route('logout')}
-                                        method="post"
-                                        as="button"
-                                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                                    >
-                                        🚪 Keluar
-                                    </Link>
-                                </div>
-                            </>
                         )}
+
+                        {/* Network Ping */}
+                        {ping !== null && (
+                            <div className="flex items-center gap-1 text-xs text-gray-500">
+                                <div className={`w-2 h-2 rounded-full ${ping < 100 ? 'bg-green-500' : ping < 300 ? 'bg-yellow-500' : 'bg-red-500'
+                                    }`}></div>
+                                <span className="hidden sm:inline">{ping}ms</span>
+                            </div>
+                        )}
+
+                        {/* User Dropdown - Mobile */}
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowingUserMenu(!showingUserMenu)}
+                                className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                            >
+                                <div className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">
+                                    {user.name.charAt(0).toUpperCase()}
+                                </div>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+
+                            {showingUserMenu && (
+                                <>
+                                    <div className="fixed inset-0 z-30" onClick={() => setShowingUserMenu(false)}></div>
+                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-40">
+                                        <div className="px-4 py-2 border-b">
+                                            <p className="text-sm font-bold text-gray-800">{user.name}</p>
+                                            <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+                                        </div>
+                                        <Link
+                                            href={route('profile.edit')}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        >
+                                            👤 Profil
+                                        </Link>
+                                        <Link
+                                            href={route('logout')}
+                                            method="post"
+                                            as="button"
+                                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                        >
+                                            🚪 Keluar
+                                        </Link>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
                 </header>
 
@@ -282,13 +381,54 @@ export default function AuthenticatedLayout({ user, header, children }) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100"
+                    className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 scrollbar-hide"
                 >
-                    {/* Header Halaman (Breadcrumb) */}
+                    {/* Header Halaman (Breadcrumb) - STICKY */}
                     {header && (
-                        <div className="bg-white shadow">
-                            <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                                {header}
+                        <div className="bg-white shadow sticky top-0 z-40">
+                            <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+                                <div>
+                                    {header}
+                                </div>
+
+                                {/* Status Indicators - Desktop Only */}
+                                <div className="hidden md:flex items-center gap-3">
+                                    {/* Subscription Badge */}
+                                    {user.tenant && (
+                                        <div className={`px-3 py-1.5 rounded-full text-sm font-bold flex items-center gap-2 ${user.tenant.status === 'trial'
+                                            ? 'bg-yellow-100 text-yellow-700'
+                                            : 'bg-green-100 text-green-700'
+                                            }`}>
+                                            {user.tenant.status === 'trial' ? (
+                                                <>
+                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"></path>
+                                                    </svg>
+                                                    TRIAL
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                                                    </svg>
+                                                    PRO BUSINESS
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Network Ping */}
+                                    {ping !== null && (
+                                        <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-sm">
+                                            <div className={`w-2.5 h-2.5 rounded-full animate-pulse ${ping < 100 ? 'bg-green-500' : ping < 300 ? 'bg-yellow-500' : 'bg-red-500'
+                                                }`}></div>
+                                            <span className="text-gray-700 font-medium">{ping}ms</span>
+                                            <span className="text-gray-400 text-xs">
+                                                {ping < 100 ? 'Excellent' : ping < 300 ? 'Good' : 'Slow'}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}

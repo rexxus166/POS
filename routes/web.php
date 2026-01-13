@@ -66,10 +66,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->middleware('role:admin')
             ->name('dashboard');
 
-        // Manajemen Karyawan (Hanya Admin Toko)
+        // Manajemen Karyawan (Hanya Admin Toko + PRO BUSINESS)
         Route::resource('employees', EmployeeController::class)
             ->only(['index', 'store', 'destroy'])
-            ->middleware('role:admin');
+            ->middleware(['role:admin', 'subscription:pro']);
 
         // Manajemen Produk
         Route::resource('products', ProductController::class)
@@ -118,9 +118,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/transaction/qris', [TransactionController::class, 'generateQris'])->name('transaction.qris');
             Route::post('/transaction/store', [TransactionController::class, 'store'])->name('transaction.store');
 
-            // [UPDATE] Riwayat Transaksi - HANYA PRO BUSINESS
+            // Riwayat Transaksi - Bisa diakses semua role (trial & pro)
             Route::get('/transactions/history', [TransactionController::class, 'history'])
-                ->middleware('subscription:pro') // [BARU] Batasi untuk Pro only
                 ->name('transaction.history');
         });
 

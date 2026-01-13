@@ -1,3 +1,53 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* === NATIVE APP-LIKE EXPERIENCE === */
+@layer base {
+    * {
+        /* Disable text selection */
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        /* Disable tap highlight on mobile */
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Allow selection for input fields */
+    input,
+    textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+
+    body {
+        /* Disable zoom on mobile */
+        touch-action: pan-x pan-y;
+
+        /* Prevent overscroll bounce */
+        overscroll-behavior: none;
+
+        /* Disable pull-to-refresh */
+        overscroll-behavior-y: contain;
+    }
+}
+
+/* === HIDE SCROLLBAR === */
+@layer utilities {
+    .scrollbar-hide {
+        /* Firefox */
+        scrollbar-width: none;
+        
+        /* IE and Edge */
+        -ms-overflow-style: none;
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar {
+        /* Chrome, Safari, Opera */
+        display: none;
+    }
+}
