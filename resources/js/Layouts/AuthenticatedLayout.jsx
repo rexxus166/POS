@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AuthenticatedLayout({ user, header, children }) {
     const [showingSidebar, setShowingSidebar] = useState(false);
+    const [showingUserMenu, setShowingUserMenu] = useState(false);
 
     // Ambil URL saat ini untuk penanda menu "Active"
     // Ambil props global (subscription_alert) dari HandleInertiaRequests
@@ -227,11 +228,52 @@ export default function AuthenticatedLayout({ user, header, children }) {
             <div className="flex-1 flex flex-col min-h-screen transition-all duration-300">
 
                 {/* Topbar Mobile (Hanya muncul di HP untuk buka sidebar) */}
-                <header className="bg-white shadow-sm h-16 flex items-center px-4 md:hidden z-20 sticky top-0">
-                    <button onClick={() => setShowingSidebar(!showingSidebar)} className="text-gray-500 hover:text-gray-700">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                    </button>
-                    <span className="ml-4 font-bold text-gray-800">POS SaaS</span>
+                <header className="bg-white shadow-sm h-16 flex items-center justify-between px-4 md:hidden z-20 sticky top-0">
+                    <div className="flex items-center">
+                        <button onClick={() => setShowingSidebar(!showingSidebar)} className="text-gray-500 hover:text-gray-700">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                        </button>
+                        <span className="ml-4 font-bold text-gray-800">POS SaaS</span>
+                    </div>
+
+                    {/* User Dropdown - Mobile */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowingUserMenu(!showingUserMenu)}
+                            className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                        >
+                            <div className="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">
+                                {user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+
+                        {showingUserMenu && (
+                            <>
+                                <div className="fixed inset-0 z-30" onClick={() => setShowingUserMenu(false)}></div>
+                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-40">
+                                    <div className="px-4 py-2 border-b">
+                                        <p className="text-sm font-bold text-gray-800">{user.name}</p>
+                                        <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+                                    </div>
+                                    <Link
+                                        href={route('profile.edit')}
+                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    >
+                                        👤 Profil
+                                    </Link>
+                                    <Link
+                                        href={route('logout')}
+                                        method="post"
+                                        as="button"
+                                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                    >
+                                        🚪 Keluar
+                                    </Link>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </header>
 
                 {/* Halaman Content dengan Transisi */}

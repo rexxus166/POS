@@ -34,6 +34,7 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
+            'cost_price' => 'nullable|numeric|min:0', // HPP/Modal
             'stock' => 'required|integer|min:0',
             'category' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -45,13 +46,14 @@ class ProductController extends Controller
         }
 
         Product::create([
-            'tenant_id' => $user->tenant_id, // Sesuaikan dengan nama kolom di tabelmu (store_id atau tenant_id)
+            'tenant_id' => $user->tenant_id,
             'name' => $request->name,
             'price' => $request->price,
+            'cost_price' => $request->cost_price ?? 0, // Default 0 jika tidak diisi
             'stock' => $request->stock,
             'category' => $request->category,
             'image' => $imagePath,
-            'is_stock_managed' => true, // Default
+            'is_stock_managed' => true,
         ]);
 
         return redirect()->back()->with('success', 'Produk berhasil ditambahkan!');
@@ -66,6 +68,7 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
+            'cost_price' => 'nullable|numeric|min:0', // HPP/Modal
             'stock' => 'required|integer',
             'category' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -74,6 +77,7 @@ class ProductController extends Controller
         // Update data text
         $product->name = $request->name;
         $product->price = $request->price;
+        $product->cost_price = $request->cost_price ?? 0; // Update HPP
         $product->stock = $request->stock;
         $product->category = $request->category;
 

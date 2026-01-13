@@ -12,6 +12,7 @@ export default function ProductIndex({ auth, products }) {
     const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
         name: '',
         price: '',
+        cost_price: '', // HPP/Modal
         stock: '',
         category: 'Coffee', // Default
         image: null,
@@ -36,6 +37,7 @@ export default function ProductIndex({ auth, products }) {
         setData({
             name: product.name,
             price: product.price,
+            cost_price: product.cost_price || 0, // HPP
             stock: product.stock,
             category: product.category,
             image: null, // Reset input file
@@ -199,9 +201,9 @@ export default function ProductIndex({ auth, products }) {
                             </div>
 
                             <div className="grid grid-cols-2 gap-3 mb-3">
-                                {/* Harga */}
+                                {/* Harga Jual */}
                                 <div>
-                                    <label className="block text-sm font-bold mb-1">Harga (Rp)</label>
+                                    <label className="block text-sm font-bold mb-1">Harga Jual (Rp)</label>
                                     <input
                                         type="number"
                                         className="w-full border-gray-300 rounded-md"
@@ -211,6 +213,21 @@ export default function ProductIndex({ auth, products }) {
                                     />
                                     {errors.price && <div className="text-red-500 text-xs">{errors.price}</div>}
                                 </div>
+                                {/* HPP/Modal */}
+                                <div>
+                                    <label className="block text-sm font-bold mb-1">HPP/Modal (Rp)</label>
+                                    <input
+                                        type="number"
+                                        className="w-full border-gray-300 rounded-md"
+                                        value={data.cost_price}
+                                        onChange={e => setData('cost_price', e.target.value)}
+                                        placeholder="8000"
+                                    />
+                                    {errors.cost_price && <div className="text-red-500 text-xs">{errors.cost_price}</div>}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3 mb-3">
                                 {/* Stok */}
                                 <div>
                                     <label className="block text-sm font-bold mb-1">Stok Awal</label>
@@ -221,6 +238,16 @@ export default function ProductIndex({ auth, products }) {
                                         onChange={e => setData('stock', e.target.value)}
                                         placeholder="100"
                                     />
+                                </div>
+                                {/* Profit Margin (Display Only) */}
+                                <div>
+                                    <label className="block text-sm font-bold mb-1">Profit Margin</label>
+                                    <div className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-700 font-bold">
+                                        {data.price && data.cost_price ?
+                                            `${(((data.price - data.cost_price) / data.price) * 100).toFixed(1)}%`
+                                            : '0%'
+                                        }
+                                    </div>
                                 </div>
                             </div>
 
