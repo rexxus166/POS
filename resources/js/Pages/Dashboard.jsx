@@ -126,19 +126,20 @@ export default function Dashboard({ auth, stats, recent_transactions, top_produc
                         {/* --- TABEL TRANSAKSI TERAKHIR --- */}
                         <motion.div variants={itemVariants} className="bg-white shadow-sm sm:rounded-lg p-6">
                             <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Transaksi Terakhir</h3>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left">
-                                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-                                        <tr>
-                                            <th className="px-3 py-2">Invoice</th>
-                                            <th className="px-3 py-2">Kasir</th>
-                                            <th className="px-3 py-2">Total</th>
-                                            <th className="px-3 py-2">Metode</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {recent_transactions.length > 0 ? (
-                                            recent_transactions.map((trx) => (
+
+                            {recent_transactions.length > 0 ? (
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-sm text-left">
+                                        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                                            <tr>
+                                                <th className="px-3 py-2">Invoice</th>
+                                                <th className="px-3 py-2">Kasir</th>
+                                                <th className="px-3 py-2">Total</th>
+                                                <th className="px-3 py-2">Metode</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {recent_transactions.map((trx) => (
                                                 <tr key={trx.id} className="bg-white border-b hover:bg-gray-50">
                                                     <td className="px-3 py-2 font-medium text-gray-900">{trx.invoice_code}</td>
                                                     <td className="px-3 py-2">{trx.cashier?.name}</td>
@@ -149,23 +150,32 @@ export default function Dashboard({ auth, stats, recent_transactions, top_produc
                                                         </span>
                                                     </td>
                                                 </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan="4" className="text-center py-4 text-gray-500">Belum ada transaksi hari ini.</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ) : (
+                                // [BARU] Tampilkan Upgrade CTA untuk Trial Users
+                                <div className="text-center py-8">
+                                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                    </div>
+                                    <h4 className="font-bold text-gray-900 mb-2">Fitur Pro Business</h4>
+                                    <p className="text-gray-500 text-sm mb-4">Lihat riwayat transaksi lengkap dengan upgrade ke Pro</p>
+                                    <a href="https://wa.me/6283186523420?text=Halo%20Admin,%20saya%20mau%20upgrade%20ke%20Pro%20Business" target="_blank" className="inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold text-sm hover:bg-indigo-700 transition">
+                                        🚀 Upgrade Sekarang
+                                    </a>
+                                </div>
+                            )}
                         </motion.div>
 
                         {/* --- TOP PRODUK --- */}
                         <motion.div variants={itemVariants} className="bg-white shadow-sm sm:rounded-lg p-6">
                             <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Produk Terlaris</h3>
-                            <ul className="space-y-3">
-                                {top_products.length > 0 ? (
-                                    top_products.map((prod, idx) => (
+
+                            {top_products.length > 0 ? (
+                                <ul className="space-y-3">
+                                    {top_products.map((prod, idx) => (
                                         <motion.li
                                             key={idx}
                                             whileHover={{ x: 5 }}
@@ -179,11 +189,21 @@ export default function Dashboard({ auth, stats, recent_transactions, top_produc
                                             </div>
                                             <span className="font-bold text-gray-900">{prod.total_sold} <span className="text-xs font-normal text-gray-500">terjual</span></span>
                                         </motion.li>
-                                    ))
-                                ) : (
-                                    <li className="text-center text-gray-500 py-4">Belum ada data penjualan.</li>
-                                )}
-                            </ul>
+                                    ))}
+                                </ul>
+                            ) : (
+                                // [BARU] Tampilkan Upgrade CTA untuk Trial Users
+                                <div className="text-center py-8">
+                                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                    </div>
+                                    <h4 className="font-bold text-gray-900 mb-2">Fitur Pro Business</h4>
+                                    <p className="text-gray-500 text-sm mb-4">Analisa produk terlaris untuk strategi bisnis lebih baik</p>
+                                    <a href="https://wa.me/6283186523420?text=Halo%20Admin,%20saya%20mau%20upgrade%20ke%20Pro%20Business" target="_blank" className="inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold text-sm hover:bg-indigo-700 transition">
+                                        🚀 Upgrade Sekarang
+                                    </a>
+                                </div>
+                            )}
                         </motion.div>
                     </div>
 

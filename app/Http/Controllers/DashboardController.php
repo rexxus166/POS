@@ -16,37 +16,46 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $tenantId = $user->tenant_id; // Asumsi user sudah punya tenant_id
+        $tenant = $user->tenant;
 
-        // 1. Hitung Omzet Hari Ini
+        // Cek apakah user Pro atau Trial
+        $isPro = $tenant && $tenant->status === 'active';
+
+        // 1. Hitung Omzet Hari Ini (Tersedia untuk Trial & Pro)
         $todayOmzet = Transaction::where('tenant_id', $tenantId)
             ->whereDate('created_at', Carbon::today())
             ->where('status', 'paid') // Pastikan status paid
             ->sum('total_amount');
 
-        // 2. Hitung Total Transaksi Hari Ini
+        // 2. Hitung Total Transaksi Hari Ini (Tersedia untuk Trial & Pro)
         $todayCount = Transaction::where('tenant_id', $tenantId)
             ->whereDate('created_at', Carbon::today())
             ->where('status', 'paid')
             ->count();
 
-        // 3. Ambil 5 Transaksi Terakhir
-        $recentTransactions = Transaction::where('tenant_id', $tenantId)
-            ->with('cashier') // Ambil nama kasir
-            ->latest()
-            ->take(5)
-            ->get();
+        // 3. Ambil 5 Transaksi Terakhir - HANYA PRO
+        $recentTransactions = [];
+        if ($isPro) {
+            $recentTransactions = Transaction::where('tenant_id', $tenantId)
+                ->with('cashier') // Ambil nama kasir
+                ->latest()
+                ->take(5)
+                ->get();
+        }
 
-        // 4. (Bonus) Produk Terlaris (Top 5)
-        // Ini query agak complex dikit pakai join
-        $topProducts = DB::table('transaction_details')
-            ->join('transactions', 'transaction_details.transaction_id', '=', 'transactions.id')
-            ->join('products', 'transaction_details.product_id', '=', 'products.id')
-            ->where('transactions.tenant_id', $tenantId)
-            ->select('products.name', DB::raw('SUM(transaction_details.quantity) as total_sold'))
-            ->groupBy('products.id', 'products.name')
-            ->orderByDesc('total_sold')
-            ->limit(5)
-            ->get();
+        // 4. (Bonus) Produk Terlaris (Top 5) - HANYA PRO
+        $topProducts = [];
+        if ($isPro) {
+            $topProducts = DB::table('transaction_details')
+                ->join('transactions', 'transaction_details.transaction_id', '=', 'transactions.id')
+                ->join('products', 'transaction_details.product_id', '=', 'products.id')
+                ->where('transactions.tenant_id', $tenantId)
+                ->select('products.name', DB::raw('SUM(transaction_details.quantity) as total_sold'))
+                ->groupBy('products.id', 'products.name')
+                ->orderByDesc('total_sold')
+                ->limit(5)
+                ->get();
+        }
 
         // 5. Info Subscription
         $tenant = $user->tenant;

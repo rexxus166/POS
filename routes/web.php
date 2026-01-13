@@ -75,6 +75,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('products', ProductController::class)
             ->middleware('role:admin');
 
+        // --- [BARU] LAPORAN KEUANGAN (PRO BUSINESS ONLY) ---
+        Route::middleware(['role:admin', 'subscription:pro'])->prefix('reports')->group(function () {
+            Route::get('/profit-loss', [App\Http\Controllers\ReportController::class, 'profitLoss'])->name('reports.profit-loss');
+            Route::get('/financial', [App\Http\Controllers\ReportController::class, 'financial'])->name('reports.financial');
+
+            // Export routes
+            Route::get('/profit-loss/export-excel', [App\Http\Controllers\ReportController::class, 'exportProfitLossExcel'])->name('reports.profit-loss.export-excel');
+            Route::get('/profit-loss/export-pdf', [App\Http\Controllers\ReportController::class, 'exportProfitLossPDF'])->name('reports.profit-loss.export-pdf');
+            Route::get('/financial/export-excel', [App\Http\Controllers\ReportController::class, 'exportFinancialExcel'])->name('reports.financial.export-excel');
+        });
+
+        // --- [BARU] LOG AKTIVITAS KARYAWAN (PRO BUSINESS ONLY) ---
+        Route::get('/activity-logs', [App\Http\Controllers\ActivityLogController::class, 'index'])
+            ->middleware(['role:admin', 'subscription:pro'])
+            ->name('activity-logs.index');
+
         // --- C. SETTINGS ---
         Route::get('/settings', function () {
             $user = Auth::user();
@@ -102,8 +118,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/transaction/qris', [TransactionController::class, 'generateQris'])->name('transaction.qris');
             Route::post('/transaction/store', [TransactionController::class, 'store'])->name('transaction.store');
 
-            // Riwayat Transaksi
+            // [UPDATE] Riwayat Transaksi - HANYA PRO BUSINESS
             Route::get('/transactions/history', [TransactionController::class, 'history'])
+                ->middleware('subscription:pro') // [BARU] Batasi untuk Pro only
                 ->name('transaction.history');
         });
 

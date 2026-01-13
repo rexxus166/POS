@@ -9,6 +9,7 @@ use App\Models\TransactionDetail;
 use App\Models\Product;
 use App\Models\Tenant;
 use App\Helpers\QrisLogic;
+use App\Helpers\ActivityLogger;
 use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Inertia\Inertia;
@@ -95,6 +96,13 @@ class TransactionController extends Controller
             }
 
             DB::commit();
+
+            // [BARU] Log aktivitas transaksi
+            ActivityLogger::logTransaction(
+                $transaction->id,
+                $request->total_amount,
+                $request->payment_method
+            );
 
             // Balikin response sukses -> Redirect ke Halaman Struk
             return redirect()->route('transaction.receipt', ['invoice_code' => $invoiceCode]);

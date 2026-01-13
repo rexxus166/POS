@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use App\Http\Middleware\RoleCheck;
 use App\Http\Middleware\CheckStoreStatus;
+use App\Http\Middleware\CheckSubscription;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
@@ -18,10 +19,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        // Daftarkan alias 'role'
+        // Daftarkan alias middleware
         $middleware->alias([
             'role' => RoleCheck::class,
             'store-status' => CheckStoreStatus::class,
+            'subscription' => CheckSubscription::class, // [BARU] Middleware untuk cek subscription level
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
