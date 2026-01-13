@@ -10,4 +10,18 @@ export default defineConfig({
         }),
         react(),
     ],
+    build: {
+        // Tambahkan baris ini untuk menaikkan batas peringatan jadi 1000 kbs (1 MB)
+        chunkSizeWarningLimit: 1000, 
+        
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules/recharts')) {
+                        return 'recharts-vendor';
+                    }
+                }
+            }
+        }
+    }
 });
