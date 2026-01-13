@@ -77,8 +77,8 @@ export default function GuestLayout({ children }) {
                     {/* Logo Mobile (Muncul cuma di HP) */}
                     <div className="lg:hidden flex justify-center mb-6">
                         <Link href="/" className="flex items-center gap-2">
+                            <span className="font-bold text-xl text-gray-800">SobatNiaga</span>
                             <div className="bg-indigo-600 text-white p-2 rounded-lg font-bold text-lg">POS</div>
-                            <span className="font-bold text-xl text-gray-800">SaaS App</span>
                         </Link>
                     </div>
 

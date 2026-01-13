@@ -10,7 +10,7 @@ const formatRupiah = (number) => {
     }).format(number);
 };
 
-export default function Dashboard({ auth, stats, recent_transactions, top_products }) {
+export default function Dashboard({ auth, stats, recent_transactions, top_products, subscription_info }) {
 
     // Animation Variants
     const containerVariants = {
@@ -44,6 +44,51 @@ export default function Dashboard({ auth, stats, recent_transactions, top_produc
                     animate="visible"
                     className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6"
                 >
+                    {/* --- INFO SUBSCRIPTION --- */}
+                    {subscription_info && (
+                        <motion.div
+                            variants={itemVariants}
+                            className={`p-6 rounded-2xl shadow-lg text-white relative overflow-hidden ${subscription_info.status_color === 'red' ? 'bg-gradient-to-r from-red-500 to-pink-600' :
+                                subscription_info.status_color === 'green' ? 'bg-gradient-to-r from-emerald-500 to-teal-600' :
+                                    'bg-gradient-to-r from-blue-600 to-indigo-700'
+                                }`}
+                        >
+                            <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-4">
+                                <div>
+                                    <h3 className="text-lg font-semibold opacity-90 mb-1">Status Langganan</h3>
+                                    <div className="flex items-center gap-3">
+                                        <h2 className="text-3xl font-bold">{subscription_info.type}</h2>
+                                        <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
+                                            {subscription_info.status_label}
+                                        </span>
+                                    </div>
+                                    <p className="mt-2 opacity-90 text-sm">
+                                        Aktif sejak <span className="font-bold">{subscription_info.start_date}</span> sampai <span className="font-bold">{subscription_info.end_date}</span>
+                                    </p>
+                                </div>
+
+                                <div className="text-center md:text-right">
+                                    <div className="text-sm opacity-80 uppercase font-bold tracking-widest">Sisa Waktu</div>
+                                    <div className="text-4xl font-extrabold flex items-baseline justify-center md:justify-end gap-1">
+                                        {subscription_info.days_remaining} <span className="text-lg font-medium">Hari</span>
+                                    </div>
+
+                                    {subscription_info.days_remaining <= 5 && (
+                                        <a
+                                            href="https://wa.me/6283186523420?text=Halo%20Admin,%20saya%20mau%20perpanjang%20langganan%20POS"
+                                            target="_blank"
+                                            className="mt-3 inline-block bg-white text-indigo-600 px-5 py-2 rounded-full font-bold text-sm hover:bg-gray-100 transition shadow-lg"
+                                        >
+                                            🚀 Perpanjang Sekarang
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Background Decoration */}
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                        </motion.div>
+                    )}
 
                     {/* --- KARTU STATISTIK --- */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

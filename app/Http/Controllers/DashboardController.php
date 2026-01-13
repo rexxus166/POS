@@ -48,13 +48,52 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        // 5. Info Subscription
+        $tenant = $user->tenant;
+        $subscriptionInfo = null;
+
+        if ($tenant) {
+            $endsAt = $tenant->subscription_ends_at;
+            $daysLeft = $endsAt ? (int) now()->diffInDays($endsAt, false) : 0;
+
+            // Tentukan Label Status & Tipe
+            $statusLabel = 'Tidak Aktif';
+            $statusColor = 'red';
+            $typeLabel = 'Unknown';
+
+            if ($tenant->status === 'trial') {
+                $typeLabel = 'Trial (Uji Coba)';
+                $statusLabel = $daysLeft > 0 ? 'Sedang Berjalan' : 'Sudah Berakhir';
+                $statusColor = $daysLeft > 0 ? 'blue' : 'red';
+            } elseif ($tenant->status === 'active') {
+                $typeLabel = 'Pro Business';
+                $statusLabel = 'Aktif';
+                $statusColor = 'green';
+            } elseif ($tenant->status === 'expired') {
+                $typeLabel = 'Expired';
+                $statusLabel = 'Non-Aktif';
+                $statusColor = 'red';
+            }
+
+            $subscriptionInfo = [
+                'type' => $typeLabel,
+                'status_label' => $statusLabel,
+                'status_color' => $statusColor,
+                'days_remaining' => $daysLeft,
+                // Asumsi start date untuk trial adalah created_at, untuk pro bisa disesuaikan nanti
+                'start_date' => $tenant->created_at->translatedFormat('d F Y'),
+                'end_date' => $endsAt ? $endsAt->translatedFormat('d F Y') : '-',
+            ];
+        }
+
         return Inertia::render('Dashboard', [
             'stats' => [
                 'today_omzet' => $todayOmzet,
                 'today_count' => $todayCount,
             ],
             'recent_transactions' => $recentTransactions,
-            'top_products' => $topProducts
+            'top_products' => $topProducts,
+            'subscription_info' => $subscriptionInfo
         ]);
     }
 }

@@ -100,7 +100,7 @@ export default function Receipt({ transaction }) {
                 <div className="text-center text-xs text-gray-500 mb-6">
                     <p>Terima Kasih atas Kunjungan Anda</p>
                     <p>Barang yang dibeli tidak dapat ditukar</p>
-                    <p className="mt-4 text-[10px]">Powered by SahabatNiaga</p>
+                    <p className="mt-4 text-[10px]">Powered by SobatNiaga</p>
                 </div>
 
                 {/* TOMBOL AKSI (Gak ikut ke-print kalau di setting print CSS) */}

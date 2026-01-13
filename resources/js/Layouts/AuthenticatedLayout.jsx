@@ -138,13 +138,13 @@ export default function AuthenticatedLayout({ user, header, children }) {
                 {/* Logo Area */}
                 <div className="h-16 flex items-center justify-center border-b border-gray-200 px-4">
                     <Link href="/" className="flex items-center gap-2">
+                        <span className="font-bold text-gray-800 text-lg tracking-tight">SobatNiaga</span>
                         <motion.div
                             whileHover={{ rotate: 10, scale: 1.1 }}
                             className="bg-indigo-600 text-white p-2 rounded-lg font-bold text-xl"
                         >
                             POS
                         </motion.div>
-                        <span className="font-bold text-gray-800 text-lg tracking-tight">SaaS App</span>
                     </Link>
                 </div>
 

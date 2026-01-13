@@ -37,7 +37,7 @@ export default function Suspended() {
                 </div>
             </div>
 
-            <p className="mt-8 text-gray-400 text-sm">Powered by SahabatNiaga &copy; {new Date().getFullYear()}</p>
+            <p className="mt-8 text-gray-400 text-sm">Powered by SobatNiaga &copy; {new Date().getFullYear()}</p>
         </div>
     );
 }
