@@ -8,6 +8,8 @@ use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use App\Models\Product;
 use App\Models\Tenant;
+use App\Models\RawMaterial;
+use App\Models\RawMaterialTransaction;
 use App\Helpers\QrisLogic;
 use App\Helpers\ActivityLogger;
 use Illuminate\Support\Facades\DB;
@@ -77,7 +79,7 @@ class TransactionController extends Controller
                 'status' => 'paid', // Asumsi kasir langsung sukses
             ]);
 
-            // 4. Simpan Detail Item & KURANGI STOK
+            // 4. Simpan Detail Item & KURANGI STOK PRODUK & BAHAN MENTAH
             foreach ($request->cart as $item) {
                 // Simpan ke transaction_details
                 TransactionDetail::create([
@@ -88,10 +90,48 @@ class TransactionController extends Controller
                     'subtotal' => $item['price'] * $item['qty'],
                 ]);
 
-                // Logic Kurangi Stok (Jika Managed)
-                $product = Product::find($item['id']);
+                // Logic Kurangi Stok Produk (Jika Managed)
+                $product = Product::with('recipes.rawMaterial')->find($item['id']);
                 if ($product->is_stock_managed) {
                     $product->decrement('stock', $item['qty']);
+                }
+
+                // [BARU] Logic Kurangi Stok Bahan Mentah (Jika produk punya resep)
+                if ($product->recipes && $product->recipes->count() > 0) {
+                    foreach ($product->recipes as $recipe) {
+                        // Hitung total kebutuhan bahan
+                        $requiredQuantity = $recipe->quantity * $item['qty'];
+
+                        $rawMaterial = $recipe->rawMaterial;
+
+                        // Cek apakah stok bahan cukup
+                        if ($rawMaterial->stock < $requiredQuantity) {
+                            throw new \Exception(
+                                "Stok bahan '{$rawMaterial->name}' tidak cukup! " .
+                                    "Dibutuhkan: {$requiredQuantity} {$rawMaterial->unit}, " .
+                                    "Tersedia: {$rawMaterial->stock} {$rawMaterial->unit}"
+                            );
+                        }
+
+                        // Kurangi stok bahan mentah
+                        $stockBefore = $rawMaterial->stock;
+                        $stockAfter = $stockBefore - $requiredQuantity;
+
+                        $rawMaterial->update(['stock' => $stockAfter]);
+
+                        // Catat transaksi bahan mentah
+                        RawMaterialTransaction::create([
+                            'tenant_id' => $user->tenant_id,
+                            'raw_material_id' => $rawMaterial->id,
+                            'transaction_type' => 'usage',
+                            'quantity' => -$requiredQuantity, // Negatif karena berkurang
+                            'stock_before' => $stockBefore,
+                            'stock_after' => $stockAfter,
+                            'reference_id' => $transaction->id, // Referensi ke transaksi penjualan
+                            'notes' => "Terpakai untuk penjualan {$product->name} (Invoice: {$invoiceCode})",
+                            'user_id' => $user->id,
+                        ]);
+                    }
                 }
             }
 

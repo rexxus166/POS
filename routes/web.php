@@ -75,6 +75,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('products', ProductController::class)
             ->middleware('role:admin');
 
+        // Kelola Resep Produk
+        Route::middleware('role:admin')->prefix('products')->group(function () {
+            Route::get('/{id}/recipe', [ProductController::class, 'getRecipe'])->name('products.recipe.get');
+            Route::post('/{id}/recipe', [ProductController::class, 'setRecipe'])->name('products.recipe.set');
+            Route::delete('/{productId}/recipe/{recipeId}', [ProductController::class, 'deleteRecipeItem'])->name('products.recipe.delete');
+        });
+
+        // --- [BARU] MANAJEMEN BAHAN MENTAH ---
+        Route::middleware('role:admin')->prefix('raw-materials')->group(function () {
+            Route::get('/', [App\Http\Controllers\RawMaterialController::class, 'index'])->name('raw-materials.index');
+            Route::post('/', [App\Http\Controllers\RawMaterialController::class, 'store'])->name('raw-materials.store');
+            Route::put('/{id}', [App\Http\Controllers\RawMaterialController::class, 'update'])->name('raw-materials.update');
+            Route::delete('/{id}', [App\Http\Controllers\RawMaterialController::class, 'destroy'])->name('raw-materials.destroy');
+            Route::post('/{id}/restock', [App\Http\Controllers\RawMaterialController::class, 'restock'])->name('raw-materials.restock');
+            Route::post('/{id}/adjust', [App\Http\Controllers\RawMaterialController::class, 'adjust'])->name('raw-materials.adjust');
+            Route::get('/{id}/history', [App\Http\Controllers\RawMaterialController::class, 'history'])->name('raw-materials.history');
+            Route::get('/low-stock', [App\Http\Controllers\RawMaterialController::class, 'getLowStock'])->name('raw-materials.low-stock');
+        });
+
         // --- [BARU] LAPORAN KEUANGAN (PRO BUSINESS ONLY) ---
         Route::middleware(['role:admin', 'subscription:pro'])->prefix('reports')->group(function () {
             Route::get('/profit-loss', [App\Http\Controllers\ReportController::class, 'profitLoss'])->name('reports.profit-loss');

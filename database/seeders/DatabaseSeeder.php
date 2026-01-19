@@ -102,6 +102,101 @@ class DatabaseSeeder extends Seeder
             ]
         ]);
 
+        // F. [BARU] Buat Bahan Mentah untuk Cafe
+        $kopiArabica = \App\Models\RawMaterial::create([
+            'tenant_id' => $cafeTenant->id,
+            'name' => 'Kopi Arabica',
+            'sku' => 'RM-KOPI-001',
+            'stock' => 5000, // 5 kg
+            'unit' => 'gram',
+            'cost_per_unit' => 150, // Rp 150/gram
+            'min_stock' => 1000, // Alert jika < 1kg
+            'category' => 'Bahan Baku',
+            'supplier' => 'Toko Kopi Nusantara',
+        ]);
+
+        $susuUHT = \App\Models\RawMaterial::create([
+            'tenant_id' => $cafeTenant->id,
+            'name' => 'Susu UHT Full Cream',
+            'sku' => 'RM-SUSU-001',
+            'stock' => 10000, // 10 liter
+            'unit' => 'ml',
+            'cost_per_unit' => 15, // Rp 15/ml
+            'min_stock' => 2000, // Alert jika < 2 liter
+            'category' => 'Bahan Baku',
+            'supplier' => 'Distributor Susu',
+        ]);
+
+        $gulaAren = \App\Models\RawMaterial::create([
+            'tenant_id' => $cafeTenant->id,
+            'name' => 'Gula Aren Cair',
+            'sku' => 'RM-GULA-001',
+            'stock' => 3000, // 3 liter
+            'unit' => 'ml',
+            'cost_per_unit' => 20, // Rp 20/ml
+            'min_stock' => 500,
+            'category' => 'Bahan Baku',
+            'supplier' => 'Toko Gula Manis',
+        ]);
+
+        $esBatu = \App\Models\RawMaterial::create([
+            'tenant_id' => $cafeTenant->id,
+            'name' => 'Es Batu',
+            'sku' => 'RM-ES-001',
+            'stock' => 20000, // 20 kg
+            'unit' => 'gram',
+            'cost_per_unit' => 2, // Rp 2/gram
+            'min_stock' => 5000,
+            'category' => 'Bahan Pendukung',
+            'supplier' => 'Pabrik Es',
+        ]);
+
+        $mieInstan = \App\Models\RawMaterial::create([
+            'tenant_id' => $cafeTenant->id,
+            'name' => 'Mie Instan Premium',
+            'sku' => 'RM-MIE-001',
+            'stock' => 100, // 100 bungkus
+            'unit' => 'pcs',
+            'cost_per_unit' => 5000, // Rp 5.000/pcs
+            'min_stock' => 20,
+            'category' => 'Bahan Baku',
+            'supplier' => 'Grosir Mie',
+        ]);
+
+        // G. [BARU] Buat Resep untuk Produk Cafe
+        // Resep untuk "Es Kopi Susu Gula Aren"
+        $kopiSusu = Product::where('sku', 'KOPI-001')->first();
+        \App\Models\ProductRecipe::create([
+            'product_id' => $kopiSusu->id,
+            'raw_material_id' => $kopiArabica->id,
+            'quantity' => 20, // 20 gram kopi per cup
+        ]);
+        \App\Models\ProductRecipe::create([
+            'product_id' => $kopiSusu->id,
+            'raw_material_id' => $susuUHT->id,
+            'quantity' => 200, // 200 ml susu per cup
+        ]);
+        \App\Models\ProductRecipe::create([
+            'product_id' => $kopiSusu->id,
+            'raw_material_id' => $gulaAren->id,
+            'quantity' => 30, // 30 ml gula aren per cup
+        ]);
+        \App\Models\ProductRecipe::create([
+            'product_id' => $kopiSusu->id,
+            'raw_material_id' => $esBatu->id,
+            'quantity' => 150, // 150 gram es per cup
+        ]);
+
+        // Resep untuk "Mie Goreng Coding"
+        $mieGoreng = Product::where('sku', 'FOOD-001')->first();
+        \App\Models\ProductRecipe::create([
+            'product_id' => $mieGoreng->id,
+            'raw_material_id' => $mieInstan->id,
+            'quantity' => 1, // 1 bungkus mie per porsi
+        ]);
+
+
+
         // ---------------------------------------------------
         // 3. TENANT 2: JASA POTONG RAMBUT (Contoh Usaha Jasa)
         // ---------------------------------------------------

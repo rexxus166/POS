@@ -17,4 +17,16 @@ class Product extends Model
     {
         return $this->belongsTo(Tenant::class);
     }
+
+    // Relasi: Produk punya banyak resep (komposisi bahan mentah)
+    public function recipes()
+    {
+        return $this->hasMany(ProductRecipe::class);
+    }
+
+    // Helper: Cek apakah produk punya resep
+    public function hasRecipe()
+    {
+        return $this->recipes()->exists();
+    }
 }

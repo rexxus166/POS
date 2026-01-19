@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use App\Models\Product;
+use App\Models\RawMaterial;
+use App\Models\ProductRecipe;
 
 class ProductController extends Controller
 {
@@ -109,5 +112,79 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->back()->with('success', 'Produk berhasil dihapus!');
+    }
+
+    // 5. GET RESEP PRODUK (untuk modal)
+    public function getRecipe($id)
+    {
+        $user = Auth::user();
+        $product = Product::where('tenant_id', $user->tenant_id)
+            ->with(['recipes.rawMaterial'])
+            ->findOrFail($id);
+
+        // Ambil semua bahan mentah untuk dropdown
+        $rawMaterials = RawMaterial::where('tenant_id', $user->tenant_id)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'product' => $product,
+            'recipes' => $product->recipes,
+            'rawMaterials' => $rawMaterials
+        ]);
+    }
+
+    // 6. SET/UPDATE RESEP PRODUK
+    public function setRecipe(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'recipes' => 'required|array',
+            'recipes.*.raw_material_id' => 'required|exists:raw_materials,id',
+            'recipes.*.quantity' => 'required|numeric|min:0.01',
+        ]);
+
+        $user = Auth::user();
+        $product = Product::where('tenant_id', $user->tenant_id)->findOrFail($id);
+
+        try {
+            DB::beginTransaction();
+
+            // Hapus resep lama
+            $product->recipes()->delete();
+
+            // Tambah resep baru
+            foreach ($validated['recipes'] as $recipe) {
+                ProductRecipe::create([
+                    'product_id' => $product->id,
+                    'raw_material_id' => $recipe['raw_material_id'],
+                    'quantity' => $recipe['quantity'],
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Resep produk berhasil disimpan!');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Gagal menyimpan resep: ' . $e->getMessage());
+        }
+    }
+
+    // 7. HAPUS SATU ITEM RESEP
+    public function deleteRecipeItem($productId, $recipeId)
+    {
+        $user = Auth::user();
+
+        try {
+            $product = Product::where('tenant_id', $user->tenant_id)->findOrFail($productId);
+            $recipe = ProductRecipe::where('product_id', $product->id)
+                ->findOrFail($recipeId);
+
+            $recipe->delete();
+
+            return redirect()->back()->with('success', 'Bahan berhasil dihapus dari resep!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menghapus bahan: ' . $e->getMessage());
+        }
     }
 }

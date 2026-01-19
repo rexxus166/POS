@@ -4,7 +4,15 @@ import Swal from 'sweetalert2';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AuthenticatedLayout({ user, header, children }) {
-    const [showingSidebar, setShowingSidebar] = useState(false);
+    const [showingSidebar, setShowingSidebar] = useState(false); // Mobile overlay
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+        // Load from localStorage for desktop/tablet
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('sidebarCollapsed');
+            return saved === 'true';
+        }
+        return false;
+    });
     const [showingUserMenu, setShowingUserMenu] = useState(false);
     const [ping, setPing] = useState(null);
     const [isPortrait, setIsPortrait] = useState(false);
@@ -75,6 +83,18 @@ export default function AuthenticatedLayout({ user, header, children }) {
         }
     }, [subscription_alert]);
 
+    // --- EFFECT: SAVE SIDEBAR STATE TO LOCALSTORAGE ---
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('sidebarCollapsed', sidebarCollapsed.toString());
+        }
+    }, [sidebarCollapsed]);
+
+    // Toggle sidebar collapse (for desktop/tablet)
+    const toggleSidebarCollapse = () => {
+        setSidebarCollapsed(!sidebarCollapsed);
+    };
+
     // --- DAFTAR MENU ---
     const menus = [
         // === MENU KHUSUS SUPER ADMIN (OWNER APLIKASI) ===
@@ -117,6 +137,14 @@ export default function AuthenticatedLayout({ user, header, children }) {
             route: 'products.index',
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+            ),
+            roles: ['admin'], // HANYA ADMIN TOKO
+        },
+        {
+            label: '🧪 Bahan Mentah',
+            route: 'raw-materials.index',
+            icon: (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
             ),
             roles: ['admin'], // HANYA ADMIN TOKO
         },
@@ -222,26 +250,60 @@ export default function AuthenticatedLayout({ user, header, children }) {
                 initial="hidden"
                 animate="visible"
                 variants={sidebarVariants}
-                className={`bg-white w-64 h-full border-r border-gray-200 fixed md:relative z-30 transition-all duration-300 flex flex-col ${showingSidebar ? 'ml-0' : '-ml-64 md:ml-0'}`}
+                className={`bg-white h-full border-r border-gray-200 fixed md:relative z-30 transition-all duration-300 flex flex-col ${showingSidebar ? 'ml-0' : '-ml-64 md:ml-0'
+                    } ${sidebarCollapsed ? 'md:w-20' : 'md:w-64'
+                    } w-64`}
             >
                 {/* Logo Area */}
                 <div className="h-16 flex items-center justify-center border-b border-gray-200 px-4">
-                    <Link href="/" className="flex items-center gap-2">
-                        <span className="font-bold text-gray-800 text-lg tracking-tight">SobatNiaga</span>
-                        <motion.div
-                            whileHover={{ rotate: 10, scale: 1.1 }}
-                            className="bg-indigo-600 text-white p-2 rounded-lg font-bold text-xl"
-                        >
-                            POS
-                        </motion.div>
+                    <Link href="/" className={`flex items-center ${sidebarCollapsed ? 'justify-center w-full' : 'gap-2'}`}>
+                        {!sidebarCollapsed ? (
+                            <>
+                                <span className="font-bold text-gray-800 text-lg tracking-tight">SobatNiaga</span>
+                                <motion.div
+                                    whileHover={{ rotate: 10, scale: 1.1 }}
+                                    className="bg-indigo-600 text-white p-2 rounded-lg font-bold text-xl"
+                                >
+                                    POS
+                                </motion.div>
+                            </>
+                        ) : (
+                            <motion.div
+                                whileHover={{ rotate: 10, scale: 1.1 }}
+                                className="bg-indigo-600 text-white p-2 rounded-lg font-bold text-xl"
+                            >
+                                POS
+                            </motion.div>
+                        )}
                     </Link>
                 </div>
 
+                {/* Floating Toggle Button - Desktop/Tablet Only */}
+                <motion.button
+                    onClick={toggleSidebarCollapse}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="hidden md:flex absolute top-20 -right-4 z-50 w-8 h-16 bg-white border border-gray-200 rounded-r-lg shadow-lg items-center justify-center hover:bg-indigo-50 hover:border-indigo-300 transition-all duration-300 group"
+                    title={sidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+                >
+                    <svg
+                        className={`w-5 h-5 text-gray-600 group-hover:text-indigo-600 transition-all duration-300 ${sidebarCollapsed ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </motion.button>
+
+
                 {/* User Info Kecil */}
-                <div className="p-4 border-b border-gray-100 bg-gray-50">
-                    <p className="text-sm font-bold text-gray-800">{user.name}</p>
-                    <p className="text-xs text-gray-500 capitalize">{user.role}</p>
-                </div>
+                {!sidebarCollapsed && (
+                    <div className="p-4 border-b border-gray-100 bg-gray-50">
+                        <p className="text-sm font-bold text-gray-800">{user.name}</p>
+                        <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+                    </div>
+                )}
 
                 {/* Menu Links */}
                 <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
@@ -255,24 +317,25 @@ export default function AuthenticatedLayout({ user, header, children }) {
                                 key={index}
                                 href={route(menu.route)}
                                 className={isLocked ? 'pointer-events-none' : ''}
+                                title={sidebarCollapsed ? menu.label : ''}
                             >
                                 <motion.div
                                     variants={linkVariants}
-                                    whileHover={!isLocked ? { x: 5 } : {}}
-                                    className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isLocked
+                                    whileHover={!isLocked ? { x: sidebarCollapsed ? 0 : 5 } : {}}
+                                    className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isLocked
                                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                         : isActive
                                             ? 'bg-indigo-50 text-indigo-700'
                                             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                         }`}
                                 >
-                                    <div className="flex items-center">
-                                        <span className={`${isActive ? 'text-indigo-600' : isLocked ? 'text-gray-300' : 'text-gray-400'} mr-3`}>
+                                    <div className={`flex items-center ${sidebarCollapsed ? '' : 'gap-3'}`}>
+                                        <span className={`${isActive ? 'text-indigo-600' : isLocked ? 'text-gray-300' : 'text-gray-400'}`}>
                                             {menu.icon}
                                         </span>
-                                        {menu.label}
+                                        {!sidebarCollapsed && menu.label}
                                     </div>
-                                    {isLocked && (
+                                    {!sidebarCollapsed && isLocked && (
                                         <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"></path>
                                         </svg>
@@ -288,14 +351,15 @@ export default function AuthenticatedLayout({ user, header, children }) {
                         method="post"
                         as="button"
                         className="w-full"
+                        title={sidebarCollapsed ? 'Keluar / Logout' : ''}
                     >
                         <motion.div
                             variants={linkVariants}
-                            whileHover={{ x: 5, color: '#991b1b' }}
-                            className="flex items-center px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 mt-4"
+                            whileHover={{ x: sidebarCollapsed ? 0 : 5, color: '#991b1b' }}
+                            className={`flex items-center ${sidebarCollapsed ? 'justify-center' : ''} px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 mt-4`}
                         >
-                            <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                            Keluar / Logout
+                            <svg className={`w-5 h-5 ${sidebarCollapsed ? '' : 'mr-3'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                            {!sidebarCollapsed && 'Keluar / Logout'}
                         </motion.div>
                     </Link>
                 </nav>
